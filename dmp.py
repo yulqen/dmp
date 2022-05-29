@@ -22,7 +22,7 @@ class RegulatoryCycle:
         return date(self.year, 1, 1)
 
     @property
-    def base_working_days(self) -> List[date]:
+    def base_working_days(self) -> List[ScopeDate]:
         """
         Return a list of date objects for the year. Weekend days omitted.
         """
@@ -36,10 +36,14 @@ class RegulatoryCycle:
             else:
                 true_first = 1
             month_days_ = [
-                date(self.year, month, d) for d in list(range(true_first, len_ + 1))
+                ScopeDate(self.year, month, d)
+                for d in list(range(true_first, len_ + 1))
             ]
-            out.append([d for d in month_days_ if d.weekday() not in [5, 6]])
-        return itertools.chain.from_iterable(out)
+            for d in month_days_:
+                if d.weekday() in [5, 6]:
+                    d.isworking = False
+            out.append([d for d in month_days_ if d.isworking is True])
+        return list(itertools.chain.from_iterable(out))
 
     def __repr__(self):
         return f"RegulatoryCycle({self.year})"
