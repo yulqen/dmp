@@ -6,6 +6,13 @@ from typing import List
 from datetime import date
 
 
+class ScopeDate(date):
+    def __new__(cls, *args):
+        d = date.__new__(cls, *args)
+        d.isworking = True
+        return d
+
+
 class RegulatoryCycle:
     def __init__(self, year: int):
         self.year = year

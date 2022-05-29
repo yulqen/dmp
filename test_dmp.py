@@ -1,5 +1,5 @@
 import pytest
-from .dmp import RegulatoryCycle
+from .dmp import RegulatoryCycle, ScopeDate
 from datetime import date
 
 
@@ -31,3 +31,8 @@ def test_reg_cycle_working_days():
         assert we1 not in working
         assert we2 not in working
         assert we3 not in working
+
+
+def test_our_date():
+    d = ScopeDate(2022, 1, 3)
+    assert d.isworking
