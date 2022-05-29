@@ -16,16 +16,14 @@ def test_reg_cycle_repr(cycle):
     assert str(cycle) == "RegulatoryCycle(2022)"
 
 
-def test_reg_cycle_calendar():
-    cycle = RegulatoryCycle(2023)
-    assert list(cycle.calendar_month(1))[0] == date(2023, 1, 2)
-    assert list(cycle.calendar_month(2))[0] == date(2023, 1, 30)
-    assert list(cycle.calendar_month(3))[0] == date(2023, 2, 27)
-    cycle = RegulatoryCycle(2024)
-    assert list(cycle.calendar_month(1))[0] == date(2024, 1, 1)
-    assert list(cycle.calendar_month(2))[0] == date(2024, 1, 29)
-    assert list(cycle.calendar_month(3))[0] == date(2024, 3, 4)
-    cycle = RegulatoryCycle(2025)
-    assert list(cycle.calendar_month(1))[0] == date(2025, 1, 6)
-    cycle = RegulatoryCycle(2026)
-    assert list(cycle.calendar_month(1))[0] == date(2026, 1, 5)
+def test_reg_cycle_working_days():
+    years = {2022: [(1, 8), (1, 9), (5, 1)], 2023: [(1, 1), (2, 18), (9, 16)]}
+    for y, v in years.items():
+        cycle = RegulatoryCycle(y)
+        we1 = date(y, v[0][0], v[0][1])
+        we2 = date(y, v[1][0], v[1][1])
+        we3 = date(y, v[2][0], v[2][1])
+        _working = cycle.base_working_days
+        assert we1 not in _working
+        assert we2 not in _working
+        assert we3 not in _working

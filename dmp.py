@@ -1,5 +1,8 @@
 # DNSyR Management Platform - prototype
+import calendar
+import itertools
 from calendar import Calendar
+from typing import List
 from datetime import date
 
 
@@ -11,21 +14,25 @@ class RegulatoryCycle:
     def start_date(self):
         return date(self.year, 1, 1)
 
-    def calendar_month(self, month: int):
-        c = Calendar()
-        res = list(c.itermonthdates(self.year, month))
-        count = 0
-        for d in res:
-            if d.year == self.year - 1:
-                count += 1
-                continue
+    @property
+    def base_working_days(self) -> List[date]:
+        """
+        Return a list of date objects for the year. Weekend days omitted.
+        """
+        out = []
+        for month in range(1, 13):
+            f, len_ = calendar.monthrange(self.year, month)
+            if f == 5:  # first day of month is Sat
+                true_first = 3
+            elif f == 6:  # first day of month is Sun
+                true_first = 2
             else:
-                if d.weekday() != 0:
-                    count += 1
-                    continue
-                else:
-                    break
-        return res[count:] 
+                true_first = 1
+            month_days_ = [
+                date(self.year, month, d) for d in list(range(true_first, len_ + 1))
+            ]
+            out.append([d for d in month_days_ if d.weekday() not in [5, 6]])
+        return itertools.chain.from_iterable(out)
 
     def __repr__(self):
         return f"RegulatoryCycle({self.year})"
