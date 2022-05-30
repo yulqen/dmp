@@ -1,15 +1,11 @@
 import pytest
-from .dmp import RegulatoryCycle, ScopeDate
+from .dmp import RegulatoryCycle, ScopeDate, Calendar
 from datetime import date
 
 
 @pytest.fixture
 def cycle():
     return RegulatoryCycle(2022)
-
-
-def test_reg_cycle_model_object(cycle):
-    assert cycle.start_date == date(2022, 1, 1)
 
 
 def test_reg_cycle_repr(cycle):
@@ -36,3 +32,14 @@ def test_reg_cycle_working_days():
 def test_our_date():
     d = ScopeDate(2022, 1, 3)
     assert d.isworking
+
+
+def test_calendar():
+    """
+    A Calendar object can be used by various components in the system -
+    the RegulatoryCycle, Inspectors, EPs, etc.
+    """
+    c = Calendar(2022)
+    first_day = ScopeDate(2022, 1, 3)
+    assert c.base_working_days[0] == first_day
+    assert str(c) == "Calendar(2022)"

@@ -1,7 +1,6 @@
 # DNSyR Management Platform - prototype
 import calendar
 import itertools
-from calendar import Calendar
 from typing import List
 from datetime import date
 
@@ -13,13 +12,12 @@ class ScopeDate(date):
         return d
 
 
-class RegulatoryCycle:
+class Calendar:
     def __init__(self, year: int):
         self.year = year
 
-    @property
-    def start_date(self):
-        return date(self.year, 1, 1)
+    def __repr__(self):
+        return f"Calendar({self.year})"
 
     @property
     def base_working_days(self) -> List[ScopeDate]:
@@ -44,6 +42,19 @@ class RegulatoryCycle:
                     d.isworking = False
             out.append([d for d in month_days_ if d.isworking is True])
         return list(itertools.chain.from_iterable(out))
+
+
+class RegulatoryCycle:
+    def __init__(self, year: int):
+        self.year = year
+        self.calendar = Calendar(self.year)
+
+    @property
+    def base_working_days(self) -> List[ScopeDate]:
+        """
+        Return a list of date objects for the year. Weekend days omitted.
+        """
+        return self.calendar.base_working_days
 
     def __repr__(self):
         return f"RegulatoryCycle({self.year})"
