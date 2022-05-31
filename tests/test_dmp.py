@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from ..models import Calendar, RegulatoryCycle, ScopeDate
+from ..models import Calendar, RegulatoryCycle, ScopeDate, _calendar_creator
 
 
 @pytest.fixture
@@ -12,6 +12,17 @@ def cycle():
 
 def test_reg_cycle_repr(cycle):
     assert str(cycle) == "RegulatoryCycle(2022)"
+
+
+def test_calendar_creator():
+    days = _calendar_creator(2022)
+    first_day = ScopeDate(2022, 1, 3)
+    assert days[0] == first_day
+    # 8, 9 Jan 2022 is Saturday and Sunday respectively
+    assert ScopeDate(2022, 1, 8) not in days
+    assert ScopeDate(2022, 1, 9) not in days
+    # 10 Jan 2022 is a Monday and is in scope
+    assert ScopeDate(2022, 1, 10) in days
 
 
 def test_reg_cycle_working_days():
