@@ -1,5 +1,5 @@
 import pytest
-from .dmp import RegulatoryCycle, ScopeDate, Calendar
+from ..dmp import RegulatoryCycle, ScopeDate, Calendar
 from datetime import date
 
 

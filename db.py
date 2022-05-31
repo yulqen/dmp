@@ -1,6 +1,6 @@
 from sqlalchemy import Table, Column, String, Integer, create_engine
 from sqlalchemy.orm import registry, sessionmaker
-from models import Inspector
+from .models import Inspector
 
 engine = create_engine("sqlite+pysqlite:///app.db", echo=True, future=True)
 Session = sessionmaker(engine)
