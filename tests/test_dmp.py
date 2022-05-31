@@ -1,6 +1,8 @@
-import pytest
-from ..dmp import RegulatoryCycle, ScopeDate, Calendar
 from datetime import date
+
+import pytest
+
+from ..models import Calendar, RegulatoryCycle, ScopeDate
 
 
 @pytest.fixture
