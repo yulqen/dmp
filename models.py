@@ -5,7 +5,35 @@ from dataclasses import dataclass, field
 from typing import List
 
 
-def _calendar_creator(year: int):
+class ScopeDate:
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month
+        self.day = day
+        self.isworking = True
+
+    def weekday(self) -> int:
+        return datetime.date(self.year, self.month, self.day).weekday()
+
+    def __repr__(self):
+        return f"ScopeDate({self.year}, {self.month}, {self.day})"
+
+    def __eq__(self, other):
+        if (
+            self.day == other.day
+            and self.month == other.month
+            and self.year == other.year
+        ):
+            return True
+        else:
+            return False
+
+    def __hash__(self):
+        return hash((self.year, self.month, self.day))
+
+
+def _calendar_creator(year: int) -> List[ScopeDate]:
+    """Given a year, returns a list of ScopeDate with weekend days removed."""
     out = []
     for month in range(1, 13):
         f, len_ = calendar.monthrange(year, month)
@@ -31,33 +59,6 @@ def _calendar_creator(year: int):
 class Inspector:
     id: int = field(init=False)
     name: str
-
-
-class ScopeDate:
-    def __init__(self, year, month, day):
-        self.year = year
-        self.month = month
-        self.day = day
-        self.isworking = True
-
-    def weekday(self):
-        return datetime.date(self.year, self.month, self.day).weekday()
-
-    def __repr__(self):
-        return f"ScopeDate({self.year}, {self.month}, {self.day})"
-
-    def __eq__(self, other):
-        if (
-            self.day == other.day
-            and self.month == other.month
-            and self.year == other.year
-        ):
-            return True
-        else:
-            return False
-
-    def __hash__(self):
-        return hash((self.year, self.month, self.day))
 
 
 class Calendar:
