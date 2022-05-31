@@ -1,6 +1,7 @@
-from sqlalchemy import Table, Column, String, Integer, create_engine
+from sqlalchemy import Boolean, Column, Integer, String, Table, create_engine
 from sqlalchemy.orm import registry, sessionmaker
-from .models import Inspector
+
+from .models import Inspector, ScopeDate
 
 engine = create_engine("sqlite+pysqlite:///app.db", echo=True, future=True)
 Session = sessionmaker(engine)
@@ -16,6 +17,17 @@ inspector = Table(
 )
 
 mapper_registery.map_imperatively(Inspector, inspector)
+
+scope_date = Table(
+    "scope_date",
+    metadata,
+    Column("day", Integer, primary_key=True),
+    Column("month", Integer, primary_key=True),
+    Column("year", Integer, primary_key=True),
+    Column("isworking", Boolean),
+)
+
+mapper_registery.map_imperatively(ScopeDate, scope_date)
 
 
 def bootstrap_db():

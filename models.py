@@ -1,7 +1,7 @@
 import calendar
+import datetime
 import itertools
 from dataclasses import dataclass, field
-from datetime import date
 from typing import List
 
 
@@ -12,11 +12,31 @@ class Inspector:
     name: str
 
 
-class ScopeDate(date):
-    def __new__(cls, *args):
-        d = date.__new__(cls, *args)
-        d.isworking = True
-        return d
+class ScopeDate:
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month
+        self.day = day
+        self.isworking = True
+
+    def weekday(self):
+        return datetime.date(self.year, self.month, self.day).weekday()
+
+    def __repr__(self):
+        return f"ScopeDate({self.year}, {self.month}, {self.day})"
+
+    def __eq__(self, other):
+        if (
+            self.day == other.day
+            and self.month == other.month
+            and self.year == other.year
+        ):
+            return True
+        else:
+            return False
+
+    def __hash__(self):
+        return hash((self.year, self.month, self.day))
 
 
 class Calendar:
