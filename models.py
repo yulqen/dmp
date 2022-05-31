@@ -6,6 +6,11 @@ from typing import List
 
 
 class ScopeDate:
+    """
+    A ScopDate represents a date object. ScopeDate.isworking allows
+    a client to designate working and non-working days.
+    """
+
     def __init__(self, year, month, day):
         self.year = year
         self.month = month
@@ -62,11 +67,12 @@ class Inspector:
 
 
 class Calendar:
-    def __init__(self, year: int):
+    def __init__(self, year: int, name: str):
         self.year = year
+        self.name = name
 
     def __repr__(self):
-        return f"Calendar({self.year})"
+        return f"Calendar({self.year}, {self.name})"
 
     @property
     def base_working_days(self) -> List[ScopeDate]:
@@ -79,7 +85,7 @@ class Calendar:
 class RegulatoryCycle:
     def __init__(self, year: int):
         self.year = year
-        self.calendar = Calendar(self.year)
+        self.calendar = Calendar(self.year, "regulatory cycle")
 
     @property
     def base_working_days(self) -> List[ScopeDate]:

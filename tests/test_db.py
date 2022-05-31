@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from ..db import mapper_registery
-from ..models import Inspector, ScopeDate
+from ..models import Calendar, Inspector, ScopeDate
 
 # from https://www.fullstackpython.com/sqlalchemy-orm-session-examples.html
 
@@ -36,3 +36,10 @@ def test_can_add_scope_date_to_db(session):
     session.add(d)
     session.commit()
     assert session.query(ScopeDate.day).first()[0] == 1
+
+
+def test_can_add_calendar_to_db(session):
+    c = Calendar(2022, "test calendar")
+    session.add(c)
+    session.commit()
+    assert session.query(Calendar.name).first()[0] == "test calendar"

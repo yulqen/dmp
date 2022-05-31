@@ -1,13 +1,22 @@
 from sqlalchemy import Boolean, Column, Integer, String, Table, create_engine
 from sqlalchemy.orm import registry, sessionmaker
 
-from .models import Inspector, ScopeDate
+from .models import Calendar, Inspector, ScopeDate
 
 engine = create_engine("sqlite+pysqlite:///app.db", echo=True, future=True)
 Session = sessionmaker(engine)
 
 mapper_registery = registry()
 metadata = mapper_registery.metadata
+
+calendar = Table(
+    "calendar",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("name", String(50)),
+)
+
+mapper_registery.map_imperatively(Calendar, calendar)
 
 inspector = Table(
     "inspector",

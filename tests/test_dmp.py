@@ -52,10 +52,10 @@ def test_calendar():
     A Calendar object can be used by various components in the system -
     the RegulatoryCycle, Inspectors, EPs, etc.
     """
-    c = Calendar(2022)
+    c = Calendar(2022, "test calendar")
     first_day = ScopeDate(2022, 1, 3)
     assert c.base_working_days[0] == first_day
-    assert str(c) == "Calendar(2022)"
+    assert str(c) == "Calendar(2022, test calendar)"
     # 8, 9 Jan 2022 is Saturday and Sunday respectively
     assert ScopeDate(2022, 1, 8) not in c.base_working_days
     assert ScopeDate(2022, 1, 9) not in c.base_working_days
