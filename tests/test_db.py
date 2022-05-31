@@ -32,7 +32,7 @@ def test_bootstrap_inspector(session):
 
 
 def test_can_add_scope_date_to_db(session):
-    d = ScopeDate(2022, 1, 1)
+    d = ScopeDate(2022, 1, 1, "test_cal")
     session.add(d)
     session.commit()
     assert session.query(ScopeDate.day).first()[0] == 1

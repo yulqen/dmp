@@ -5,17 +5,34 @@ from dataclasses import dataclass, field
 from typing import List
 
 
+class Calendar:
+    def __init__(self, year: int, name: str):
+        self.year = year
+        self.name = name
+
+    def __repr__(self):
+        return f"Calendar({self.year}, {self.name})"
+
+    @property
+    def base_working_days(self) -> List["ScopeDate"]:
+        """
+        Return a list of date objects for the year. Weekend days omitted.
+        """
+        return _calendar_creator(self.year)
+
+
 class ScopeDate:
     """
     A ScopDate represents a date object. ScopeDate.isworking allows
     a client to designate working and non-working days.
     """
 
-    def __init__(self, year, month, day):
+    def __init__(self, year, month, day, calendar_name: str):
         self.year = year
         self.month = month
         self.day = day
         self.isworking = True
+        self.calendar = Calendar(self.year, calendar)
 
     def weekday(self) -> int:
         return datetime.date(self.year, self.month, self.day).weekday()
@@ -49,7 +66,7 @@ def _calendar_creator(year: int) -> List[ScopeDate]:
         else:
             true_first = 1
         month_days_ = [
-            ScopeDate(year, month, d)
+            ScopeDate(year, month, d, "test")
             for d in list(range(true_first, len_ + 1))  # ignore
         ]
         for d in month_days_:
@@ -64,22 +81,6 @@ def _calendar_creator(year: int) -> List[ScopeDate]:
 class Inspector:
     id: int = field(init=False)
     name: str
-
-
-class Calendar:
-    def __init__(self, year: int, name: str):
-        self.year = year
-        self.name = name
-
-    def __repr__(self):
-        return f"Calendar({self.year}, {self.name})"
-
-    @property
-    def base_working_days(self) -> List[ScopeDate]:
-        """
-        Return a list of date objects for the year. Weekend days omitted.
-        """
-        return _calendar_creator(self.year)
 
 
 class RegulatoryCycle:
