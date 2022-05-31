@@ -21,7 +21,7 @@ def session(session_factory):
     return session_factory()
 
 
-def test_bootstrap_calendar(session):
+def test_bootstrap_inspector(session):
     i = Inspector(name="Clint")
     session.add(i)
     session.commit()

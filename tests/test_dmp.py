@@ -43,3 +43,8 @@ def test_calendar():
     first_day = ScopeDate(2022, 1, 3)
     assert c.base_working_days[0] == first_day
     assert str(c) == "Calendar(2022)"
+    # 8, 9 Jan 2022 is Saturday and Sunday respectively
+    assert ScopeDate(2022, 1, 8) not in c.base_working_days
+    assert ScopeDate(2022, 1, 9) not in c.base_working_days
+    # 10 Jan 2022 is a Monday and is in scope
+    assert ScopeDate(2022, 1, 10) in c.base_working_days
