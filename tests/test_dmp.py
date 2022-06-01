@@ -14,7 +14,8 @@ def test_reg_cycle_repr(cycle):
 
 
 def test_calendar_creator():
-    days = _calendar_creator(2022)
+    c = Calendar(2022)
+    days = _calendar_creator(c)
     first_day = ScopeDate(2022, 1, 3)
     assert days[0] == first_day
     # 8, 9 Jan 2022 is Saturday and Sunday respectively

@@ -1,6 +1,6 @@
 import pytest
 from dmp.db import mapper_registry
-from dmp.models import Calendar, Inspector, ScopeDate
+from dmp.models import Calendar, Inspector, ScopeDate, _calendar_creator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -38,7 +38,11 @@ def test_can_add_scope_date_to_db(session):
 
 
 def test_can_add_calendar_to_db(session):
-    c = Calendar(2022, "test calendar")
+    c = Calendar(2022)
+    assert c.scope_dates == []
+    # let's add some dates to this calendar
+    c.scope_dates = _calendar_creator(c)
     session.add(c)
     session.commit()
-    assert session.query(Calendar.name).first()[0] == "test calendar"
+    res = session.query(Calendar).first()
+    assert ScopeDate(2022, 1, 8) not in res.scope_dates

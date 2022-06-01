@@ -21,7 +21,7 @@ class Calendar:
         """
         Return a list of date objects for the year. Weekend days omitted.
         """
-        return _calendar_creator(self.year)
+        return _calendar_creator(self)
 
 
 class ScopeDate:
@@ -57,11 +57,14 @@ class ScopeDate:
         return hash((self.year, self.month, self.day))
 
 
-def _calendar_creator(year: int) -> List[ScopeDate]:
-    """Given a year, returns a list of ScopeDate with weekend days removed."""
+def _calendar_creator(c: Calendar) -> List[ScopeDate]:
+    """
+    Given a Calendar object, returns a list of ScopeDate
+    with weekend days removed.
+    """
     out = []
     for month in range(1, 13):
-        f, len_ = calendar.monthrange(year, month)
+        f, len_ = calendar.monthrange(c.year, month)
         if f == 5:  # first day of month is Sat
             true_first = 3
         elif f == 6:  # first day of month is Sun
@@ -69,7 +72,7 @@ def _calendar_creator(year: int) -> List[ScopeDate]:
         else:
             true_first = 1
         month_days_ = [
-            ScopeDate(year, month, d)
+            ScopeDate(c.year, month, d)
             for d in list(range(true_first, len_ + 1))  # ignore
         ]
         for d in month_days_:
