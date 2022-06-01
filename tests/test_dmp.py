@@ -1,8 +1,7 @@
 from datetime import date
 
 import pytest
-
-from ..models import Calendar, RegulatoryCycle, ScopeDate, _calendar_creator
+from dmp.models import Calendar, RegulatoryCycle, ScopeDate, _calendar_creator
 
 
 @pytest.fixture

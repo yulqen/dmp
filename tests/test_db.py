@@ -1,9 +1,8 @@
 import pytest
+from dmp.db import mapper_registry
+from dmp.models import Calendar, Inspector, ScopeDate
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-from ..db import mapper_registery
-from ..models import Calendar, Inspector, ScopeDate
 
 # from https://www.fullstackpython.com/sqlalchemy-orm-session-examples.html
 
@@ -13,7 +12,7 @@ test_db_url = "sqlite+pysqlite:///:memory:"
 @pytest.fixture(scope="function")
 def session_factory():
     engine = create_engine(test_db_url, echo=False, future=True)
-    metadata = mapper_registery.metadata
+    metadata = mapper_registry.metadata
     metadata.create_all(engine)
     yield sessionmaker(engine)
     engine.dispose()
@@ -32,7 +31,7 @@ def test_bootstrap_inspector(session):
 
 
 def test_can_add_scope_date_to_db(session):
-    d = ScopeDate(2022, 1, 1, "test_cal")
+    d = ScopeDate(2022, 1, 1)
     session.add(d)
     session.commit()
     assert session.query(ScopeDate.day).first()[0] == 1

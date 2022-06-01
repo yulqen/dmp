@@ -27,12 +27,11 @@ class ScopeDate:
     a client to designate working and non-working days.
     """
 
-    def __init__(self, year, month, day, calendar_name: str):
+    def __init__(self, year, month, day):
         self.year = year
         self.month = month
         self.day = day
         self.isworking = True
-        self.calendar = Calendar(self.year, calendar)
 
     def weekday(self) -> int:
         return datetime.date(self.year, self.month, self.day).weekday()
