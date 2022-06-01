@@ -46,3 +46,14 @@ def test_can_add_calendar_to_db(session):
     session.commit()
     res = session.query(Calendar).first()
     assert ScopeDate(2022, 1, 8) not in res.scope_dates
+
+
+def test_can_delete_calendar(session):
+    c = Calendar(2002)
+    c.scope_dates = _calendar_creator(c)
+    session.add(c)
+    session.commit()
+    res = session.query(Calendar).first()
+    session.delete(res)
+    assert len(session.query(Calendar).all()) == 0
+    assert len(session.query(ScopeDate).all()) == 0

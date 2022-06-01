@@ -38,6 +38,7 @@ calendar = Table(
     "calendar",
     metadata,
     Column("id", Integer, primary_key=True),
+    Column("year", Integer),
     Column("name", String(50)),
 )
 
@@ -46,7 +47,10 @@ mapper_registry.map_imperatively(
     calendar,
     properties={
         "scope_dates": relationship(
-            ScopeDate, backref="calendar", order_by=scope_date.c.day
+            ScopeDate,
+            backref="calendar",
+            cascade="all, delete, delete-orphan",
+            order_by=scope_date.c.day,
         )
     },
 )
