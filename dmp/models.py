@@ -32,6 +32,7 @@ class ScopeDate:
         self.month = month
         self.day = day
         self.isworking = True
+        self.calendar = Calendar(self.year, "test")
 
     def weekday(self) -> int:
         return datetime.date(self.year, self.month, self.day).weekday()
@@ -65,7 +66,7 @@ def _calendar_creator(year: int) -> List[ScopeDate]:
         else:
             true_first = 1
         month_days_ = [
-            ScopeDate(year, month, d, "test")
+            ScopeDate(year, month, d)
             for d in list(range(true_first, len_ + 1))  # ignore
         ]
         for d in month_days_:

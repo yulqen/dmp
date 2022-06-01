@@ -15,13 +15,13 @@ def test_reg_cycle_repr(cycle):
 
 def test_calendar_creator():
     days = _calendar_creator(2022)
-    first_day = ScopeDate(2022, 1, 3, "test")
+    first_day = ScopeDate(2022, 1, 3)
     assert days[0] == first_day
     # 8, 9 Jan 2022 is Saturday and Sunday respectively
-    assert ScopeDate(2022, 1, 8, "test") not in days
-    assert ScopeDate(2022, 1, 9, "test") not in days
+    assert ScopeDate(2022, 1, 8) not in days
+    assert ScopeDate(2022, 1, 9) not in days
     # 10 Jan 2022 is a Monday and is in scope
-    assert ScopeDate(2022, 1, 10, "test") in days
+    assert ScopeDate(2022, 1, 10) in days
 
 
 def test_reg_cycle_working_days():
@@ -42,7 +42,7 @@ def test_reg_cycle_working_days():
 
 
 def test_our_date():
-    d = ScopeDate(2022, 1, 3, "test")
+    d = ScopeDate(2022, 1, 3)
     assert d.isworking
 
 
@@ -52,11 +52,11 @@ def test_calendar():
     the RegulatoryCycle, Inspectors, EPs, etc.
     """
     c = Calendar(2022, "test calendar")
-    first_day = ScopeDate(2022, 1, 3, "test calendar")
+    first_day = ScopeDate(2022, 1, 3)
     assert c.base_working_days[0] == first_day
     assert str(c) == "Calendar(2022, test calendar)"
     # 8, 9 Jan 2022 is Saturday and Sunday respectively
-    assert ScopeDate(2022, 1, 8, "test calendar") not in c.base_working_days
-    assert ScopeDate(2022, 1, 9, "test calendar") not in c.base_working_days
+    assert ScopeDate(2022, 1, 8) not in c.base_working_days
+    assert ScopeDate(2022, 1, 9) not in c.base_working_days
     # 10 Jan 2022 is a Monday and is in scope
-    assert ScopeDate(2022, 1, 10, "test calendar") in c.base_working_days
+    assert ScopeDate(2022, 1, 10) in c.base_working_days
