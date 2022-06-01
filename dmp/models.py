@@ -5,6 +5,10 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 
 
+class ModelException(Exception):
+    pass
+
+
 class ScopeDate:
     """
     A ScopDate represents a date object. ScopeDate.isworking allows
@@ -50,18 +54,15 @@ class Calendar:
     def __repr__(self):
         return f"Calendar({self.year}, {self.name})"
 
-    # @property
-    # def base_working_days(self) -> List["ScopeDate"]:
-    #     """
-    #     Return a list of date objects for the year. Weekend days omitted.
-    #     """
-    #     return _calendar_creator(self)
-
     def calendar_creator(self) -> List[ScopeDate]:
         """
         Given a Calendar object, returns a list of ScopeDate
         with weekend days removed.
         """
+        if len(self.scope_dates) > 0:
+            raise ModelException(
+                f"Cannot create dates for {self} as the are already created."
+            )
         out = []
         for month in range(1, 13):
             f, len_ = calendar.monthrange(self.year, month)

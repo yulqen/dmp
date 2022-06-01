@@ -20,14 +20,14 @@ metadata = mapper_registry.metadata
 scope_date = Table(
     "scope_date",
     metadata,
-    Column("day", Integer, primary_key=True),
-    Column("month", Integer, primary_key=True),
-    Column("year", Integer, primary_key=True),
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("day", Integer),
+    Column("month", Integer),
+    Column("year", Integer),
     Column(
         "calendar_id",
         Integer,
         ForeignKey("calendar.id"),
-        primary_key=True,
     ),
     Column("isworking", Boolean),
 )
@@ -50,7 +50,7 @@ mapper_registry.map_imperatively(
             ScopeDate,
             backref="calendar",
             cascade="all, delete, delete-orphan",
-            order_by=scope_date.c.day,
+            order_by=scope_date.c.id,
         )
     },
 )

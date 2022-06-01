@@ -1,6 +1,6 @@
 import pytest
 from dmp.db import mapper_registry
-from dmp.models import Calendar, Inspector, ScopeDate
+from dmp.models import Calendar, Inspector, ModelException, ScopeDate
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -46,6 +46,20 @@ def test_can_add_calendar_to_db(session):
     session.commit()
     res = session.query(Calendar).first()
     assert ScopeDate(2022, 1, 8) not in res.scope_dates
+
+
+def test_cannot_create_dates_twice_for_calendar(session):
+    c = Calendar(2022)
+    assert c.scope_dates == []
+    # let's add some dates to this calendar
+    c.calendar_creator()
+    session.add(c)
+    session.commit()
+    res = session.query(Calendar).first()
+    assert len(res.scope_dates) == 260
+    # ensure we cannot create dates again
+    with pytest.raises(ModelException):
+        c.calendar_creator()
 
 
 def test_can_delete_calendar(session):

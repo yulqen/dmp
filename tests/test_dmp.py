@@ -18,7 +18,7 @@ def test_calendar_creator():
     c.calendar_creator()
     days = c.scope_dates
     first_day = ScopeDate(2022, 1, 3)
-    assert days[0] == first_day
+    assert list(days)[0] == first_day
     # 8, 9 Jan 2022 is Saturday and Sunday respectively
     assert ScopeDate(2022, 1, 8) not in days
     assert ScopeDate(2022, 1, 9) not in days
