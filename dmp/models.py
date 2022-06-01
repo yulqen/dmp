@@ -2,13 +2,16 @@ import calendar
 import datetime
 import itertools
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
 
 class Calendar:
-    def __init__(self, year: int, name: str):
+    def __init__(self, year: int, name: Optional[str] = None):
         self.year = year
-        self.name = name
+        if name:
+            self.name = name
+        else:
+            self.name = "default"
 
     def __repr__(self):
         return f"Calendar({self.year}, {self.name})"
@@ -32,7 +35,7 @@ class ScopeDate:
         self.month = month
         self.day = day
         self.isworking = True
-        self.calendar = Calendar(self.year, "test")
+        self.calendar = Calendar(self.year)
 
     def weekday(self) -> int:
         return datetime.date(self.year, self.month, self.day).weekday()
