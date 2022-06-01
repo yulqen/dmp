@@ -1,7 +1,7 @@
 from datetime import date
 
 import pytest
-from dmp.models import Calendar, RegulatoryCycle, ScopeDate, _calendar_creator
+from dmp.models import Calendar, RegulatoryCycle, ScopeDate
 
 
 @pytest.fixture
@@ -15,7 +15,8 @@ def test_reg_cycle_repr(cycle):
 
 def test_calendar_creator():
     c = Calendar(2022)
-    days = _calendar_creator(c)
+    c.calendar_creator()
+    days = c.scope_dates
     first_day = ScopeDate(2022, 1, 3)
     assert days[0] == first_day
     # 8, 9 Jan 2022 is Saturday and Sunday respectively
@@ -53,11 +54,12 @@ def test_calendar():
     the RegulatoryCycle, Inspectors, EPs, etc.
     """
     c = Calendar(2022, "test calendar")
+    c.calendar_creator()
     first_day = ScopeDate(2022, 1, 3)
-    assert c.base_working_days[0] == first_day
+    assert c.scope_dates[0] == first_day
     assert str(c) == "Calendar(2022, test calendar)"
     # 8, 9 Jan 2022 is Saturday and Sunday respectively
-    assert ScopeDate(2022, 1, 8) not in c.base_working_days
-    assert ScopeDate(2022, 1, 9) not in c.base_working_days
+    assert ScopeDate(2022, 1, 8) not in c.scope_dates
+    assert ScopeDate(2022, 1, 9) not in c.scope_dates
     # 10 Jan 2022 is a Monday and is in scope
-    assert ScopeDate(2022, 1, 10) in c.base_working_days
+    assert ScopeDate(2022, 1, 10) in c.scope_dates
