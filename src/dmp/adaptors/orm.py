@@ -1,3 +1,6 @@
+import logging
+
+from dmp.domain.models import Calendar, Inspector, ScopeDate
 from sqlalchemy import (
     Boolean,
     Column,
@@ -9,7 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import registry, relationship, sessionmaker
 
-from dmp.models import Calendar, Inspector, ScopeDate
+logger = logging.getLogger(__name__)
 
 engine = create_engine("sqlite+pysqlite:///app.db", echo=True, future=True)
 Session = sessionmaker(engine)
@@ -32,7 +35,6 @@ scope_date = Table(
     Column("isworking", Boolean),
 )
 
-mapper_registry.map_imperatively(ScopeDate, scope_date)
 
 calendar = Table(
     "calendar",
@@ -42,18 +44,6 @@ calendar = Table(
     Column("name", String(50)),
 )
 
-mapper_registry.map_imperatively(
-    Calendar,
-    calendar,
-    properties={
-        "scope_dates": relationship(
-            ScopeDate,
-            backref="calendar",
-            cascade="all, delete, delete-orphan",
-            order_by=scope_date.c.id,
-        )
-    },
-)
 
 inspector = Table(
     "inspector",
@@ -62,11 +52,28 @@ inspector = Table(
     Column("name", String(50)),
 )
 
-mapper_registry.map_imperatively(Inspector, inspector)
+
+def start_mappers():
+    logger.info("Starting mappers")
+    mapper_registry.map_imperatively(ScopeDate, scope_date)
+    mapper_registry.map_imperatively(Inspector, inspector)
+    mapper_registry.map_imperatively(
+        Calendar,
+        calendar,
+        properties={
+            "scope_dates": relationship(
+                ScopeDate,
+                backref="calendar",
+                cascade="all, delete, delete-orphan",
+                order_by=scope_date.c.id,
+            )
+        },
+    )
+    metadata.create_all(engine)
 
 
 def bootstrap_db():
-    metadata.create_all(engine)
+    logger.info("Bootstrapping database")
     with Session() as session:
         session.add(Inspector(name="Colin Brabham"))
         session.add(Inspector(name="Charl Schnitzel"))
