@@ -1,4 +1,5 @@
 import pytest
+from dmp.adaptors.repository import CalendarRepository
 from dmp.domain.models import Calendar, Inspector, ModelException, ScopeDate
 
 # from https://www.fullstackpython.com/sqlalchemy-orm-session-examples.html
@@ -62,6 +63,23 @@ def test_can_delete_calendar(sqlite_session_factory):
 
 
 # Repository tests
-def test_calendar_repository_add(sqlite_session_factory):
+def test_calendar_repository_list(sqlite_session_factory):
     session = sqlite_session_factory()
-    assert False
+    session.execute(
+        "INSERT INTO calendar (id, year, name)" "VALUES(1, 2021, 'test cal')"  # noqa
+    )
+    repo = CalendarRepository(session)
+    res = repo.list()
+    assert res[0].name == "test cal"
+    assert res[0].year == 2021
+
+
+def test_calendar_repository_get(sqlite_session_factory):
+    session = sqlite_session_factory()
+    session.execute(
+        "INSERT INTO calendar (id, year, name)" "VALUES(1, 2021, 'test cal')"  # noqa
+    )
+    repo = CalendarRepository(session)
+    res = repo.get(2021, "test cal")
+    assert res.name == "test cal"
+    assert res.year == 2021
