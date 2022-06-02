@@ -4,6 +4,7 @@ from dmp.domain.models import Calendar, Inspector, ModelException, ScopeDate
 
 # from https://www.fullstackpython.com/sqlalchemy-orm-session-examples.html
 
+# ensure that the 'mappers' fixture from conftest runs for each test
 pytestmark = pytest.mark.usefixtures("mappers")
 
 
