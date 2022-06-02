@@ -79,7 +79,20 @@ def test_calendar_repository_get(sqlite_session_factory):
     session.execute(
         "INSERT INTO calendar (id, year, name)" "VALUES(1, 2021, 'test cal')"  # noqa
     )
+    [[c_id]] = session.execute(
+        "SELECT id FROM calendar WHERE name=:name AND year=:year",
+        dict(name="test cal", year=2021),
+    )
+    session.execute(
+        "INSERT INTO scope_date (id, year, month, day, isworking, calendar_id)"
+        "VALUES(:id, :year, :month, :day, :isworking, :calendar_id)",
+        dict(id=1, year=2021, month=1, day=1, isworking=1, calendar_id=c_id),
+    )
     repo = CalendarRepository(session)
     res = repo.get(2021, "test cal")
     assert res.name == "test cal"
     assert res.year == 2021
+    assert res.scope_dates[0].day == 1
+    assert res.scope_dates[0].year == 2021
+    assert res.scope_dates[0].month == 1
+    assert res.scope_dates[0].isworking is True
