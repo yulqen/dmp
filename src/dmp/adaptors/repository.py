@@ -23,6 +23,7 @@ class CalendarRepository(AbstractRepository):
         self.session = session
 
     def add(self, cal: Calendar):
+        cal.calendar_creator()
         self.session.add(cal)
 
     def list(self):

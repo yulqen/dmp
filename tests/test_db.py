@@ -97,3 +97,18 @@ def test_calendar_repository_get(sqlite_session_factory):
     assert res.scope_dates[0].year == 2021
     assert res.scope_dates[0].month == 1
     assert res.scope_dates[0].isworking is True
+
+
+def test_calendar_repository_add(sqlite_session_factory):
+    c = Calendar(2019, "testes")
+    session = sqlite_session_factory()
+    repo = CalendarRepository(session)
+    repo.add(c)
+    session.commit()
+    rows = session.execute("SELECT id, year, name FROM calendar")
+    dates = session.execute(
+        "SELECT year, month, day FROM scope_date WHERE year=:year AND month=:month AND day=:day",
+        dict(year=2019, month=1, day=10),
+    )
+    assert list(rows) == [(1, 2019, "testes")]
+    assert list(dates) == [(2019, 1, 10)]
