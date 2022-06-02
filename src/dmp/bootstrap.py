@@ -1,8 +1,14 @@
 import logging
 
-from dmp.adapters import orm
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from dmp.adaptors import orm
+from dmp.domain.models import Inspector
 
 logger = logging.getLogger(__name__)
+engine = create_engine("sqlite+pysqlite:///app.db", echo=True, future=True)
+Session = sessionmaker(engine)
 
 
 def bootstrap_db():
