@@ -71,3 +71,8 @@ def test_can_delete_calendar(session):
     session.delete(res)
     assert len(session.query(Calendar).all()) == 0
     assert len(session.query(ScopeDate).all()) == 0
+
+
+# Repository tests
+def test_calendar_repository_add(session):
+    assert False
