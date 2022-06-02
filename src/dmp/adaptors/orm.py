@@ -14,7 +14,7 @@ from sqlalchemy.orm import registry, relationship, sessionmaker
 
 logger = logging.getLogger(__name__)
 
-engine = create_engine("sqlite+pysqlite:///app.db", echo=True, future=True)
+engine = create_engine("sqlite+pysqlite:///app.db", echo=False, future=True)
 Session = sessionmaker(engine)
 
 mapper_registry = registry()
@@ -70,15 +70,3 @@ def start_mappers():
         },
     )
     metadata.create_all(engine)
-
-
-def bootstrap_db():
-    logger.info("Bootstrapping database")
-    with Session() as session:
-        session.add(Inspector(name="Colin Brabham"))
-        session.add(Inspector(name="Charl Schnitzel"))
-        session.commit()
-
-
-if __name__ == "__main__":
-    bootstrap_db()

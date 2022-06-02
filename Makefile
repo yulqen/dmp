@@ -1,2 +1,2 @@
 test:
-	pytest -q -x --tb=short
+	pytest -q --tb=short

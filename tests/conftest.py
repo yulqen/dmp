@@ -23,19 +23,3 @@ def mappers():
     start_mappers()
     yield
     clear_mappers()
-
-
-# legacy...
-
-# @pytest.fixture(scope="function")
-# def session_factory():
-#     engine = create_engine(test_db_url, echo=False, future=True)
-#     metadata = mapper_registry.metadata
-#     metadata.create_all(engine)
-#     yield sessionmaker(engine)
-#     engine.dispose()
-
-
-# @pytest.fixture(scope="function")
-# def session(session_factory):
-#     return session_factory()
