@@ -1,6 +1,6 @@
 import abc
 
-from dmp.domain.models import Calendar
+from dmp.domain.models import Calendar, Inspector
 from sqlalchemy import select
 
 
@@ -43,7 +43,7 @@ class InspectorRepository(AbstractRepository):
         self.session.add(name)
 
     def get(self, name: str):
-        pass
+        return self.session.execute(select(Inspector).filter_by(name=name)).one()
 
     def list(self):
-        pass
+        return self.session.query(Inspector).all()

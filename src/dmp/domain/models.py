@@ -93,6 +93,13 @@ class Inspector:
         self.calendar = Calendar(year)
         self.calendar.calendar_creator()
 
+    def __eq__(self, other):
+        # TODO: This is not great - there may be two of same name
+        return self.name == other
+
+    def __repr__(self):
+        return f'Inspector("{self.name}")'
+
 
 class RegulatoryCycle:
     def __init__(self, year: int):

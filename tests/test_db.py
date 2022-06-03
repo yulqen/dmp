@@ -136,3 +136,21 @@ def test_inspector_respository_add(sqlite_session_factory):
     session.commit()
     rows = session.execute("SELECT id, name FROM inspector")
     assert list(rows) == [(1, "Ramon Chuffo")]
+
+
+def test_inspector_respository_get(sqlite_session_factory):
+    session = sqlite_session_factory()
+    session.execute("INSERT INTO inspector (name) VALUES('Sandy Bolstun')")
+    repo = InspectorRepository(session)
+    res = repo.get("Sandy Bolstun")
+    assert res[0] == Inspector("Sandy Bolstun")
+
+
+def test_inspector_respository_list(sqlite_session_factory):
+    session = sqlite_session_factory()
+    session.execute("INSERT INTO inspector (name) VALUES('Sandy Bolstun')")
+    session.execute("INSERT INTO inspector (name) VALUES('Hayden McLeslo')")
+    repo = InspectorRepository(session)
+    insprs = repo.list()
+    assert Inspector("Hayden McLeslo") in insprs
+    assert Inspector("Sandy Bolstun") in insprs
