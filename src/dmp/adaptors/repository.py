@@ -60,7 +60,7 @@ class EventRepository(AbstractRepository):
 
     def add(self, name: str, cal: Calendar, year: int, month: int, day: int):
         try:
-            match = self.session.execute(
+            self.session.execute(
                 select(ScopeDate).filter_by(
                     calendar_id=cal.id, year=year, month=month, day=day
                 )

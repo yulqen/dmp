@@ -212,6 +212,7 @@ def test_event_respository_add_cannot_match_date(sqlite_session_factory):
     session.commit()
     repo = EventRepository(session)
     with pytest.raises(MatchException) as e_info:
+        # not a working date
         repo.add("Test event", cal, *(2022, 11, 20))
     assert (
         e_info.value.args[0]
