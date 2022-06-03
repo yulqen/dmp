@@ -1,8 +1,11 @@
 import abc
+import logging
 
 from dmp.domain.models import Calendar, Event, Inspector, ScopeDate
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
+
+logger = logging.getLogger(__name__)
 
 
 class MatchException(Exception):
@@ -70,6 +73,7 @@ class EventRepository(AbstractRepository):
                 f"Cannot find ScopeDate({year}, {month}, {day}) in {cal}"
             )
         self.session.add(Event(name, ScopeDate(year, month, day)))
+        logger.info(f"Created Event({name}) to {cal}")
 
     def get(self, name: str, cal: Calendar):
         pass
