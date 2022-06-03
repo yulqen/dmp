@@ -1,7 +1,13 @@
 import pytest
-from dmp.adaptors.repository import CalendarRepository, InspectorRepository
+from dmp.adaptors.repository import (
+    CalendarRepository,
+    EventRepository,
+    InspectorRepository,
+    MatchException,
+)
 from dmp.domain.models import (
     Calendar,
+    Event,
     Inspector,
     ModelException,
     RegulatoryCycle,
@@ -22,6 +28,18 @@ def test_regulatory_cycle(sqlite_session_factory):
     res = session.query(RegulatoryCycle).first()
     assert ScopeDate(2020, 1, 17) in res.calendar.scope_dates
     assert ScopeDate(2020, 1, 18) not in res.calendar.scope_dates
+
+
+def test_event(sqlite_session_factory):
+    session = sqlite_session_factory()
+    d = ScopeDate(2020, 10, 1)
+    # this is fine but in interface we must restict to
+    # a ScopeDate from a nominated Calendar.
+    e = Event("test event", d)
+    session.add(e)
+    session.commit()
+    assert session.query(Event).first().name == "test event"
+    assert session.query(Event).first().date == ScopeDate(2020, 10, 1)
 
 
 def test_bootstrap_inspector(sqlite_session_factory):
@@ -170,3 +188,32 @@ def test_inspector_respository_list(sqlite_session_factory):
     insprs = repo.list()
     assert Inspector("Hayden McLeslo") in insprs
     assert Inspector("Sandy Bolstun") in insprs
+
+
+def test_event_repository_add(sqlite_session_factory):
+    session = sqlite_session_factory()
+    cal = Calendar(2022)
+    cal.calendar_creator()
+    session.add(cal)
+    session.commit()
+    repo = EventRepository(session)
+    repo.add("Test event", cal, *(2022, 1, 20))
+    session.commit()
+    res = session.query(Event).all()[0]
+    assert res.name == "Test event"
+    assert res.date == ScopeDate(2022, 1, 20)
+
+
+def test_event_respository_add_cannot_match_date(sqlite_session_factory):
+    session = sqlite_session_factory()
+    cal = Calendar(2022)
+    cal.calendar_creator()
+    session.add(cal)
+    session.commit()
+    repo = EventRepository(session)
+    with pytest.raises(MatchException) as e_info:
+        repo.add("Test event", cal, *(2022, 11, 20))
+    assert (
+        e_info.value.args[0]
+        == "Cannot find ScopeDate(2022, 11, 20) in Calendar(2022, default)"
+    )

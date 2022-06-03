@@ -82,7 +82,6 @@ class Calendar:
         self.scope_dates = list(itertools.chain.from_iterable(out))
 
 
-# models
 class Inspector:
     def __init__(self, name):
         self.name = name
@@ -108,3 +107,12 @@ class RegulatoryCycle:
 
     def __repr__(self):
         return f"RegulatoryCycle({self.year})"
+
+
+class Event:
+    def __init__(self, name: str, date: ScopeDate):
+        self.name = name
+        self.date = date
+
+    def __repr__(self):
+        return f"Event({self.name})"

@@ -1,7 +1,12 @@
 import abc
 
-from dmp.domain.models import Calendar, Inspector
+from dmp.domain.models import Calendar, Event, Inspector, ScopeDate
 from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
+
+
+class MatchException(Exception):
+    pass
 
 
 class AbstractRepository(abc.ABC):
@@ -47,3 +52,27 @@ class InspectorRepository(AbstractRepository):
 
     def list(self):
         return self.session.query(Inspector).all()
+
+
+class EventRepository(AbstractRepository):
+    def __init__(self, session):
+        self.session = session
+
+    def add(self, name: str, cal: Calendar, year: int, month: int, day: int):
+        try:
+            match = self.session.execute(
+                select(ScopeDate).filter_by(
+                    calendar_id=cal.id, year=year, month=month, day=day
+                )
+            ).one()
+        except NoResultFound:
+            raise MatchException(
+                f"Cannot find ScopeDate({year}, {month}, {day}) in {cal}"
+            )
+        self.session.add(Event(name, ScopeDate(year, month, day)))
+
+    def get(self, name: str, cal: Calendar):
+        pass
+
+    def list(self):
+        pass
