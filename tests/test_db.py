@@ -16,6 +16,17 @@ def test_bootstrap_inspector(sqlite_session_factory):
     assert session.query(Inspector.name).first()[0] == "Clint"
 
 
+def test_inspector_has_a_calendar(sqlite_session_factory):
+    i = Inspector("Ian Shuffletone")
+    i.add_calendar(2020)
+    session = sqlite_session_factory()
+    session.add(i)
+    session.commit()
+    res = session.query(Inspector).first()
+    assert ScopeDate(2020, 1, 17) in res.calendar.scope_dates
+    assert ScopeDate(2020, 1, 18) not in res.calendar.scope_dates
+
+
 def test_can_add_scope_date_to_db(sqlite_session_factory):
     session = sqlite_session_factory()
     d = ScopeDate(2022, 1, 1)

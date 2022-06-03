@@ -84,10 +84,15 @@ class Calendar:
 
 
 # models
-@dataclass
 class Inspector:
-    id: int = field(init=False)
-    name: str
+    def __init__(self, name):
+        self.name = name
+        self.id = 0
+        self.calendar = None
+
+    def add_calendar(self, year: int):
+        self.calendar = Calendar(year)
+        self.calendar.calendar_creator()
 
 
 class RegulatoryCycle:

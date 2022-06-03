@@ -50,13 +50,25 @@ inspector = Table(
     metadata,
     Column("id", Integer, primary_key=True),
     Column("name", String(50)),
+    Column("calendar_id", ForeignKey("calendar.id")),
 )
 
 
 def start_mappers():
     logger.info("Starting mappers")
     mapper_registry.map_imperatively(ScopeDate, scope_date)
-    mapper_registry.map_imperatively(Inspector, inspector)
+    mapper_registry.map_imperatively(
+        Inspector,
+        inspector,
+        properties={
+            "calendar": relationship(
+                Calendar,
+                backref="inspector",
+                cascade="all, delete",
+                order_by=calendar.c.id,
+            )
+        },
+    )
     mapper_registry.map_imperatively(
         Calendar,
         calendar,
