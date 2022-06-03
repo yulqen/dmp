@@ -33,3 +33,17 @@ class CalendarRepository(AbstractRepository):
         return self.session.execute(
             select(Calendar).filter_by(year=year, name=name).filter_by(name=name)
         ).one()[0]
+
+
+class InspectorRepository(AbstractRepository):
+    def __init__(self, session):
+        self.session = session
+
+    def add(self, name: str):
+        self.session.add(name)
+
+    def get(self, name: str):
+        pass
+
+    def list(self):
+        pass

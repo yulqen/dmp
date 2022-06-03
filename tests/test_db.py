@@ -1,5 +1,5 @@
 import pytest
-from dmp.adaptors.repository import CalendarRepository
+from dmp.adaptors.repository import CalendarRepository, InspectorRepository
 from dmp.domain.models import Calendar, Inspector, ModelException, ScopeDate
 
 # from https://www.fullstackpython.com/sqlalchemy-orm-session-examples.html
@@ -74,7 +74,9 @@ def test_can_delete_calendar(sqlite_session_factory):
     assert len(session.query(ScopeDate).all()) == 0
 
 
-# Repository tests
+# **** Repository tests ****
+
+
 def test_calendar_repository_list(sqlite_session_factory):
     session = sqlite_session_factory()
     session.execute(
@@ -123,3 +125,14 @@ def test_calendar_repository_add(sqlite_session_factory):
     )
     assert list(rows) == [(1, 2019, "testes")]
     assert list(dates) == [(2019, 1, 10)]
+
+
+def test_inspector_respository_add(sqlite_session_factory):
+    i = Inspector("Ramon Chuffo")
+    i.add_calendar(2020)
+    session = sqlite_session_factory()
+    repo = InspectorRepository(session)
+    repo.add(i)
+    session.commit()
+    rows = session.execute("SELECT id, name FROM inspector")
+    assert list(rows) == [(1, "Ramon Chuffo")]

@@ -87,7 +87,6 @@ class Calendar:
 class Inspector:
     def __init__(self, name):
         self.name = name
-        self.id = 0
         self.calendar = None
 
     def add_calendar(self, year: int):
