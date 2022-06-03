@@ -105,14 +105,7 @@ class RegulatoryCycle:
     def __init__(self, year: int):
         self.year = year
         self.calendar = Calendar(self.year, "regulatory cycle")
-
-    @property
-    def base_working_days(self) -> List[ScopeDate]:
-        """
-        Return a list of date objects for the year. Weekend days omitted.
-        """
         self.calendar.calendar_creator()
-        return self.calendar.scope_dates
 
     def __repr__(self):
         return f"RegulatoryCycle({self.year})"

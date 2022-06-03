@@ -37,7 +37,7 @@ def test_reg_cycle_working_days():
         we1 = date(y, v[0][0], v[0][1])
         we2 = date(y, v[1][0], v[1][1])
         we3 = date(y, v[2][0], v[2][1])
-        working = cycle.base_working_days
+        working = cycle.calendar.scope_dates
         assert we1 not in working
         assert we2 not in working
         assert we3 not in working

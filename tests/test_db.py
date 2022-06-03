@@ -1,11 +1,27 @@
 import pytest
 from dmp.adaptors.repository import CalendarRepository, InspectorRepository
-from dmp.domain.models import Calendar, Inspector, ModelException, ScopeDate
+from dmp.domain.models import (
+    Calendar,
+    Inspector,
+    ModelException,
+    RegulatoryCycle,
+    ScopeDate,
+)
 
 # from https://www.fullstackpython.com/sqlalchemy-orm-session-examples.html
 
 # ensure that the 'mappers' fixture from conftest runs for each test
 pytestmark = pytest.mark.usefixtures("mappers")
+
+
+def test_regulatory_cycle(sqlite_session_factory):
+    session = sqlite_session_factory()
+    rc = RegulatoryCycle(2020)
+    session.add(rc)
+    session.commit()
+    res = session.query(RegulatoryCycle).first()
+    assert ScopeDate(2020, 1, 17) in res.calendar.scope_dates
+    assert ScopeDate(2020, 1, 18) not in res.calendar.scope_dates
 
 
 def test_bootstrap_inspector(sqlite_session_factory):

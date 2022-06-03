@@ -1,6 +1,6 @@
 import logging
 
-from dmp.domain.models import Calendar, Inspector, ScopeDate
+from dmp.domain.models import Calendar, Inspector, RegulatoryCycle, ScopeDate
 from sqlalchemy import (
     Boolean,
     Column,
@@ -19,6 +19,14 @@ Session = sessionmaker(engine)
 
 mapper_registry = registry()
 metadata = mapper_registry.metadata
+
+regulatory_cycle = Table(
+    "regulatory_cycle",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("year", Integer),
+    Column("calendar_id", Integer, ForeignKey("calendar.id")),
+)
 
 scope_date = Table(
     "scope_date",
@@ -57,6 +65,18 @@ inspector = Table(
 def start_mappers():
     logger.info("Starting mappers")
     mapper_registry.map_imperatively(ScopeDate, scope_date)
+    mapper_registry.map_imperatively(
+        RegulatoryCycle,
+        regulatory_cycle,
+        properties={
+            "calendar": relationship(
+                Calendar,
+                backref="regulatory_cycle",
+                cascade="all, delete",
+                order_by=calendar.c.id,
+            )
+        },
+    )
     mapper_registry.map_imperatively(
         Inspector,
         inspector,
