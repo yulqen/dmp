@@ -201,7 +201,7 @@ def test_event_repository_add(sqlite_session_factory):
     session.commit()
     res = session.query(Event).all()[0]
     assert res.name == "Test event"
-    assert res.date == ScopeDate(2022, 1, 20)
+    assert res.dates == ScopeDate(2022, 1, 20)
 
 
 def test_event_respository_add_cannot_match_date(sqlite_session_factory):

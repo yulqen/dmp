@@ -61,6 +61,13 @@ inspector = Table(
     Column("calendar_id", ForeignKey("calendar.id")),
 )
 
+event_date_assoc = Table(
+    "event_date_assoc",
+    metadata,
+    Column("event_id", ForeignKey("event.id"), primary_key=True),
+    Column("scope_date_id", ForeignKey("scope_date.id"), primary_key=True),
+)
+
 event = Table(
     "event",
     metadata,
@@ -72,16 +79,25 @@ event = Table(
 
 def start_mappers():
     logger.info("Starting mappers")
-    mapper_registry.map_imperatively(ScopeDate, scope_date)
+    mapper_registry.map_imperatively(
+        ScopeDate,
+        scope_date,
+        properties={
+            "events": relationship(
+                Event,
+                back_populates="dates",
+                secondary=event_date_assoc,
+            )
+        },
+    )
     mapper_registry.map_imperatively(
         Event,
         event,
         properties={
-            "date": relationship(
+            "dates": relationship(
                 ScopeDate,
-                backref="event",
-                cascade="all, delete",
-                order_by=scope_date.c.id,
+                back_populates="events",
+                secondary=event_date_assoc,
             )
         },
     )
