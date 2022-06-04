@@ -223,8 +223,8 @@ def test_event_respository_add_cannot_match_date(sqlite_session_factory):
     )
     with pytest.raises(MatchException) as e_info:
         # not a working date
-        repo.add("Test event", cal, *(11, 2022, 20))
+        repo.add("Test event", cal, [ScopeDate(2022, 1, 16)])
     assert (
         e_info.value.args[0]
-        == "Cannot find ScopeDate(11, 2022, 20) in Calendar(2022, default)"
+        == "Cannot find ScopeDate(2022, 1, 16) in Calendar(2022, default)"
     )

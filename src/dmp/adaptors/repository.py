@@ -64,16 +64,20 @@ class EventRepository(AbstractRepository):
 
     def add(self, name: str, cal: Calendar, dates: List[ScopeDate]):
         # TODO: fix this to iterate through all dates
-        # try:
-        #     self.session.execute(
-        #         select(ScopeDate).filter_by(
-        #             calendar_id=cal.id, year=year, month=month, day=day
-        #         )
-        #     ).one()
-        # except NoResultFound:
-        #     raise MatchException(
-        #         f"Cannot find ScopeDate({year}, {month}, {day}) in {cal}"
-        #     )
+        for d in dates:
+            year = d.year
+            month = d.month
+            day = d.day
+            try:
+                self.session.execute(
+                    select(ScopeDate).filter_by(
+                        calendar_id=cal.id, year=year, month=month, day=day
+                    )
+                ).one()
+            except NoResultFound:
+                raise MatchException(
+                    f"Cannot find ScopeDate({year}, {month}, {day}) in {cal}"
+                )
         self.session.add(Event(name, dates))
         logger.info(f"Created Event({name}) to {cal}")
 
