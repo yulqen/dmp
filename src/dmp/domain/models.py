@@ -110,9 +110,9 @@ class RegulatoryCycle:
 
 
 class Event:
-    def __init__(self, name: str, date: ScopeDate):
+    def __init__(self, name: str, dates: List[ScopeDate]):
         self.name = name
-        self.date = date
+        self.dates = dates
 
     def __repr__(self):
         return f"Event({self.name})"

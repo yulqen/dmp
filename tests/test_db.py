@@ -1,3 +1,5 @@
+from typing import List
+
 import pytest
 from dmp.adaptors.repository import (
     CalendarRepository,
@@ -35,11 +37,11 @@ def test_event(sqlite_session_factory):
     d = ScopeDate(2020, 10, 1)
     # this is fine but in interface we must restict to
     # a ScopeDate from a nominated Calendar.
-    e = Event("test event", d)
+    e = Event("test event", [d])
     session.add(e)
     session.commit()
     assert session.query(Event).first().name == "test event"
-    assert session.query(Event).first().date == ScopeDate(2020, 10, 1)
+    assert ScopeDate(2020, 10, 1) in session.query(Event).first().dates
 
 
 def test_bootstrap_inspector(sqlite_session_factory):
@@ -197,11 +199,12 @@ def test_event_repository_add(sqlite_session_factory):
     session.add(cal)
     session.commit()
     repo = EventRepository(session)
-    repo.add("Test event", cal, *(2022, 1, 20))
+    sc = ScopeDate(2022, 1, 10)
+    repo.add("Test event", cal, [sc])
     session.commit()
     res = session.query(Event).all()[0]
     assert res.name == "Test event"
-    assert res.dates == ScopeDate(2022, 1, 20)
+    assert res.dates[0] == ScopeDate(2022, 1, 10)
 
 
 def test_event_respository_add_cannot_match_date(sqlite_session_factory):
@@ -213,7 +216,7 @@ def test_event_respository_add_cannot_match_date(sqlite_session_factory):
     repo = EventRepository(session)
     with pytest.raises(MatchException) as e_info:
         # not a working date
-        repo.add("Test event", cal, *(2022, 11, 20))
+        repo.add("Test event", cal, [ScopeDate(2022, 11, 20)])
     assert (
         e_info.value.args[0]
         == "Cannot find ScopeDate(2022, 11, 20) in Calendar(2022, default)"
