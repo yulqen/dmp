@@ -1,6 +1,5 @@
 from typing import List
 
-from dmp.adaptors.orm import start_mappers
 from dmp.adaptors.repository import ScopeDateRepository
 from dmp.domain.models import ScopeDate
 
