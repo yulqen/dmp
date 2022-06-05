@@ -103,4 +103,4 @@ class EventRepository(AbstractRepository):
         pass
 
     def list(self):
-        pass
+        return self.session.execute(select(Event)).all()
