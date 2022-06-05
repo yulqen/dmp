@@ -20,6 +20,19 @@ def test_add_event_for_item_with_no_calendar(sqlite_session_factory):
     assert exc_info.value.args[0] == "_nocal() does not have a Calendar attribute."
 
 
+def test_add_single_event_for_inspector(sqlite_session_factory):
+    session = sqlite_session_factory()
+    i = Inspector("Harold Chroma")
+    i.add_calendar(2020)
+    session.add(i)
+    session.commit()
+    start = ScopeDate(2020, 2, 14)  # in scope
+    dmp.service.add_calendar_event(i, "Harold's Day Off", start, session)
+    repo = EventRepository(session)
+    events = repo.list()
+    assert events[0][0].dates[0] == ScopeDate(2020, 2, 14)
+
+
 def test_add_span_for_inspector(sqlite_session_factory):
     session = sqlite_session_factory()
     i = Inspector("Harold Chroma")
@@ -28,7 +41,7 @@ def test_add_span_for_inspector(sqlite_session_factory):
     session.commit()
     start = ScopeDate(2020, 2, 14)  # in scope
     end = ScopeDate(2020, 3, 2)  # in scope
-    dmp.service.add_calendar_event(i, "Harold's Holidays", start, end, session)
+    dmp.service.add_calendar_event(i, "Harold's Holidays", start, session, end)
     repo = EventRepository(session)
     events = repo.list()
     for e in events:
@@ -36,6 +49,7 @@ def test_add_span_for_inspector(sqlite_session_factory):
         assert end in e[0].dates
 
 
+@pytest.mark.skip("TODO")
 def test_add_span_includes_noworking_date(sqlite_session_factory):
     # TODO: should throw exception if one or both dates are non isworking
     pass
