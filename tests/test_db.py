@@ -1,11 +1,13 @@
 from typing import List
 
+import dmp.service
 import pytest
 from dmp.adaptors.repository import (
     CalendarRepository,
     EventRepository,
     InspectorRepository,
     MatchException,
+    ScopeDateRepository,
 )
 from dmp.domain.models import (
     Calendar,
@@ -113,6 +115,16 @@ def test_can_delete_calendar(sqlite_session_factory):
 # **** Repository tests ****
 
 
+def test_list_scope_dates(sqlite_session_factory):
+    session = sqlite_session_factory()
+    c = Calendar(2002)
+    c.calendar_creator()
+    session.add(c)
+    session.commit()
+    repo = ScopeDateRepository(session)
+    assert repo.list()
+
+
 def test_calendar_repository_list(sqlite_session_factory):
     session = sqlite_session_factory()
     session.execute(
@@ -205,6 +217,22 @@ def test_event_repository_add(sqlite_session_factory):
     res = session.query(Event).all()[0]
     assert res.name == "Test event"
     assert res.dates[0] == ScopeDate(2022, 1, 10)
+
+
+def test_event_add_multi_date(sqlite_session_factory):
+    session = sqlite_session_factory()
+    cal = Calendar(2022)
+    cal.calendar_creator()
+    session.add(cal)
+    session.commit()
+    repo = EventRepository(session)
+    start = ScopeDate(2022, 2, 14)
+    end = ScopeDate(2022, 2, 17)
+    valid_dates = dmp.service.date_span(start, end, session)
+    repo.add("Test Multi-Day Event", cal, valid_dates)
+    session.commit()
+    res = session.query(Event).all()[0]
+    assert res.dates == valid_dates
 
 
 def test_event_respository_add_cannot_match_date(sqlite_session_factory):

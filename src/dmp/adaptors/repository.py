@@ -1,6 +1,6 @@
 import abc
 import logging
-from typing import List
+from typing import List, Tuple
 
 from dmp.domain.models import Calendar, Event, Inspector, ScopeDate
 from sqlalchemy import select
@@ -56,6 +56,24 @@ class InspectorRepository(AbstractRepository):
 
     def list(self):
         return self.session.query(Inspector).all()
+
+
+class ScopeDateRepository(AbstractRepository):
+    def __init__(self, session):
+        self.session = session
+
+    def add(self, date: ScopeDate):
+        self.session.add(date)
+
+    def get(self, date: Tuple):
+        year, month, day = date
+        return self.session.execute(
+            select(ScopeDate).filter_by(year=year, month=month, day=day)
+        ).one()
+
+    def list(self):
+        res = self.session.execute(select(ScopeDate)).all()
+        return [r[0] for r in res]
 
 
 class EventRepository(AbstractRepository):
