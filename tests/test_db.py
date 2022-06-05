@@ -256,3 +256,20 @@ def test_event_respository_add_cannot_match_date(sqlite_session_factory):
         e_info.value.args[0]
         == "Cannot find ScopeDate(2022, 1, 16) in Calendar(2022, default)"
     )
+
+
+def test_calendar_can_only_get_one_set_of_dates(sqlite_session_factory):
+    session = sqlite_session_factory()
+    cal = Calendar(2022)
+    cal.calendar_creator()
+    session.add(cal)
+    session.commit()
+    repo = EventRepository(session)
+    # TODO - we don't want to be creating new dates! The session creates
+    # them with this syntax - we just want to pass the attributes....
+    # we should be sending tuples instead of ScopeDate objects to
+    # repo.add()
+    repo.add("Test Event", cal, [ScopeDate(2022, 2, 3)])
+    session.commit()
+    # this results in two of the date
+    pass
