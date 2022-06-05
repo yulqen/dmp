@@ -7,6 +7,19 @@ from dmp.domain.models import Calendar, Inspector, ScopeDate
 pytestmark = pytest.mark.usefixtures("mappers")
 
 
+def test_add_event_for_item_with_no_calendar(sqlite_session_factory):
+    class _nocal:
+        def __repr__(self):
+            return "_nocal()"
+
+    c = _nocal()
+    session = sqlite_session_factory()
+    a, b = (1, 2)
+    with pytest.raises(dmp.service.ServiceException) as exc_info:
+        dmp.service.add_calendar_event(c, "Illegal", a, b, session)
+    assert exc_info.value.args[0] == "_nocal() does not have a Calendar attribute."
+
+
 def test_add_span_for_inspector(sqlite_session_factory):
     session = sqlite_session_factory()
     i = Inspector("Harold Chroma")
@@ -38,7 +51,7 @@ def test_date_span_no_weekend(sqlite_session_factory):
     # we don't know if these span a weekend
     start = ScopeDate(2022, 2, 14)
     end = ScopeDate(2022, 2, 17)
-    valid_dates = dmp.service.date_span(start, end, session)
+    valid_dates = dmp.service._date_span(start, end, session)
     assert len(valid_dates) == 4  # no intervening non-working days
     assert valid_dates[0].year == 2022
     assert valid_dates[0].month == 2
@@ -58,7 +71,7 @@ def test_date_span_over_weekend(sqlite_session_factory):
     # we don't know if these span a weekend
     start = ScopeDate(2022, 6, 3)
     end = ScopeDate(2022, 6, 10)
-    valid_dates = dmp.service.date_span(start, end, session)
+    valid_dates = dmp.service._date_span(start, end, session)
     assert len(valid_dates) == 6  # no intervening non-working days
     assert valid_dates[0].year == 2022
     assert valid_dates[0].month == 6

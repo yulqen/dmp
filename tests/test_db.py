@@ -228,7 +228,7 @@ def test_event_add_multi_date(sqlite_session_factory):
     repo = EventRepository(session)
     start = ScopeDate(2022, 2, 14)
     end = ScopeDate(2022, 2, 17)
-    valid_dates = dmp.service.date_span(start, end, session)
+    valid_dates = dmp.service._date_span(start, end, session)
     repo.add("Test Multi-Day Event", cal, valid_dates)
     session.commit()
     res = session.query(Event).all()[0]

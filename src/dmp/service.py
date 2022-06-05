@@ -4,7 +4,16 @@ from dmp.adaptors.repository import EventRepository, ScopeDateRepository
 from dmp.domain.models import ScopeDate
 
 
-def date_span(start: ScopeDate, end: ScopeDate, session) -> List[ScopeDate]:
+class ServiceException(Exception):
+    pass
+
+
+def _date_span(start: ScopeDate, end: ScopeDate, session) -> List[ScopeDate]:
+    """
+    Given start and end dates, returns a list of ScopeDate objects,
+    inclusive of those dates, that span the period. This list can be
+    passed to EventRepository.add().
+    """
     repo = ScopeDateRepository(session)
     dates = repo.list()
     start_id = [
@@ -22,7 +31,15 @@ def date_span(start: ScopeDate, end: ScopeDate, session) -> List[ScopeDate]:
 
 
 def add_calendar_event(owner, name: str, start: ScopeDate, end: ScopeDate, session):
-    dates = date_span(start, end, session)
+    """
+    If owner has a Calendar object, add event name with start and end dates
+    provided.
+    """
+    try:
+        owner.calendar
+    except AttributeError:
+        raise ServiceException(f"{owner} does not have a Calendar attribute.")
+    dates = _date_span(start, end, session)
     repo = EventRepository(session)
     for d in dates:
         repo.add(name, owner.calendar, dates)
