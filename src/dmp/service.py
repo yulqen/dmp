@@ -75,13 +75,11 @@ def add_calendar_event(
     repo.add(name, owner.calendar)
     if end:
         dates = _date_span(start, end, session)
-        for d in dates:
-            # FIXME - need to fetch unique Event object here!
-            ev_ = session.execute(select(Event).where(Event.name == name)).fetchone()
-            assoc_dates_with_event(ev_[0], owner.calendar, [start, end], session)
+        # FIXME - need to fetch unique Event object here!
+        ev_ = session.execute(select(Event).where(Event.name == name)).fetchone()
+        assoc_dates_with_event(ev_[0], owner.calendar, dates, session)
         session.commit()
     else:
-        repo.add(name, owner.calendar)
         # FIXME - need to fetch unique Event object here!
         ev_ = session.execute(select(Event).where(Event.name == name)).fetchone()
         assoc_dates_with_event(ev_[0], owner.calendar, [start], session)
