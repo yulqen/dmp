@@ -72,10 +72,10 @@ def add_calendar_event(
         owner.calendar
     except AttributeError:
         raise ServiceException(f"{owner} does not have a Calendar attribute.")
+    repo.add(name, owner.calendar)
     if end:
         dates = _date_span(start, end, session)
         for d in dates:
-            repo.add(name, owner.calendar)
             # FIXME - need to fetch unique Event object here!
             ev_ = session.execute(select(Event).where(Event.name == name)).fetchone()
             assoc_dates_with_event(ev_[0], owner.calendar, [start, end], session)
