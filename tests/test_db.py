@@ -42,6 +42,18 @@ def test_bootstrap_inspector(sqlite_session_factory):
     assert session.query(Inspector.name).first()[0] == "Clint"
 
 
+def test_bootstrap_inspector_in_one(sqlite_session_factory):
+    session = sqlite_session_factory()
+    i = Inspector(name="Hollis McGill")
+    c = Calendar(2022, "Hollis's Calendar")
+    c.calendar_creator()
+    i.calendar = c
+    session.add(i)
+    session.commit()
+    ins = session.execute(select(Inspector)).fetchone()
+    assert ins[0].calendar.scope_dates[0].day == 3
+
+
 def test_inspector_has_a_calendar(sqlite_session_factory):
     i = Inspector("Ian Shuffletone")
     i.add_calendar(2020)
