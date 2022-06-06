@@ -32,9 +32,9 @@ scope_date = Table(
     "scope_date",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("day", Integer),
-    Column("month", Integer),
-    Column("year", Integer),
+    Column("day", Integer, nullable=False),
+    Column("month", Integer, nullable=False),
+    Column("year", Integer, nullable=False),
     Column(
         "calendar_id",
         Integer,
@@ -48,7 +48,7 @@ calendar = Table(
     "calendar",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("year", Integer),
+    Column("year", Integer, nullable=False),
     Column("name", String(50)),
 )
 
@@ -57,7 +57,7 @@ inspector = Table(
     "inspector",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("name", String(50)),
+    Column("name", String(50), nullable=False),
     Column("calendar_id", ForeignKey("calendar.id")),
 )
 
@@ -72,7 +72,7 @@ event = Table(
     "event",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("name", String(255)),
+    Column("name", String(255), nullable=False),
     Column("date_id", ForeignKey("scope_date.id")),
 )
 
