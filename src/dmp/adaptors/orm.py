@@ -137,4 +137,8 @@ def start_mappers():
             )
         },
     )
-    metadata.create_all(engine)
+    # doing this as a transaction as advised by in sqlalchemy
+    # video at https://www.youtube.com/channel/UCCul-BKVL5EcAles3YW63yQ
+    # at 46min
+    with engine.begin() as conn:
+        metadata.create_all(conn)
