@@ -6,7 +6,6 @@ from dmp.adaptors.repository import (
     CalendarRepository,
     EventRepository,
     InspectorRepository,
-    MatchException,
     ScopeDateRepository,
 )
 from dmp.domain.models import (
@@ -17,6 +16,7 @@ from dmp.domain.models import (
     RegulatoryCycle,
     ScopeDate,
 )
+from sqlalchemy import select
 
 # from https://www.fullstackpython.com/sqlalchemy-orm-session-examples.html
 
@@ -32,18 +32,6 @@ def test_regulatory_cycle(sqlite_session_factory):
     res = session.query(RegulatoryCycle).first()
     assert ScopeDate(2020, 1, 17) in res.calendar.scope_dates
     assert ScopeDate(2020, 1, 18) not in res.calendar.scope_dates
-
-
-def test_event(sqlite_session_factory):
-    session = sqlite_session_factory()
-    d = ScopeDate(2020, 10, 1)
-    # this is fine but in interface we must restict to
-    # a ScopeDate from a nominated Calendar.
-    e = Event("test event", [d])
-    session.add(e)
-    session.commit()
-    assert session.query(Event).first().name == "test event"
-    assert ScopeDate(2020, 10, 1) in session.query(Event).first().dates
 
 
 def test_bootstrap_inspector(sqlite_session_factory):
@@ -66,6 +54,7 @@ def test_inspector_has_a_calendar(sqlite_session_factory):
 
 
 def test_can_add_scope_date_to_db(sqlite_session_factory):
+    # TODO - Candidate for dropping
     session = sqlite_session_factory()
     d = ScopeDate(2022, 1, 1)
     session.add(d)
@@ -210,13 +199,20 @@ def test_event_repository_add(sqlite_session_factory):
     cal.calendar_creator()
     session.add(cal)
     session.commit()
+    # monitor count of dates
+    ds1 = len(session.execute(select(ScopeDate)).all())
     repo = EventRepository(session)
-    sc = ScopeDate(2022, 1, 10)
-    repo.add("Test event", cal, [sc])
+    repo.add("Test event", cal)
     session.commit()
+    ev_ = session.execute(select(Event)).one()[0]
+    dmp.service.assoc_dates_with_event(ev_, cal, [(2022, 1, 6)], session)
+    ds2 = len(session.execute(select(ScopeDate)).all())
     res = session.query(Event).all()[0]
+    assert (
+        ds1 == ds2
+    )  # we must not create new ScopeDate objects as a result of creating Events
     assert res.name == "Test event"
-    assert res.dates[0] == ScopeDate(2022, 1, 10)
+    assert res.dates[0] == ScopeDate(2022, 1, 6)
 
 
 def test_event_add_multi_date(sqlite_session_factory):
@@ -225,14 +221,22 @@ def test_event_add_multi_date(sqlite_session_factory):
     cal.calendar_creator()
     session.add(cal)
     session.commit()
+    ds1 = len(session.execute(select(ScopeDate)).all())
     repo = EventRepository(session)
-    start = ScopeDate(2022, 2, 14)
-    end = ScopeDate(2022, 2, 17)
-    valid_dates = dmp.service._date_span(start, end, session)
-    repo.add("Test Multi-Day Event", cal, valid_dates)
+    repo.add("Test Multi-Day Event", cal)
     session.commit()
+    start = (2022, 2, 14)
+    end = (2022, 2, 17)
+    ev_ = session.execute(select(Event)).one()[0]
+    valid_dates = dmp.service._date_span(start, end, session)
+    dmp.service.assoc_dates_with_event(ev_, cal, valid_dates, session)
+    session.commit()
+    ds2 = len(session.execute(select(ScopeDate)).all())
     res = session.query(Event).all()[0]
-    assert res.dates == valid_dates
+    assert (
+        ds1 == ds2
+    )  # we must not create new ScopeDate objects as a result of creating Events
+    assert valid_dates == [(d.year, d.month, d.day) for d in res.dates]
 
 
 def test_event_respository_add_cannot_match_date(sqlite_session_factory):
@@ -242,19 +246,14 @@ def test_event_respository_add_cannot_match_date(sqlite_session_factory):
     session.add(cal)
     session.commit()
     repo = EventRepository(session)
-    with pytest.raises(MatchException) as e_info:
+    with pytest.raises(dmp.service.MatchException) as e_info:
         # not a working date
-        repo.add("Test event", cal, [ScopeDate(2022, 11, 20)])
+        repo.add("Test event", cal)
+        ev_ = session.execute(select(Event)).one()[0]
+        dmp.service.assoc_dates_with_event(ev_, cal, [(2022, 11, 20)], session)
     assert (
         e_info.value.args[0]
         == "Cannot find ScopeDate(2022, 11, 20) in Calendar(2022, default)"
-    )
-    with pytest.raises(MatchException) as e_info:
-        # not a working date
-        repo.add("Test event", cal, [ScopeDate(2022, 1, 16)])
-    assert (
-        e_info.value.args[0]
-        == "Cannot find ScopeDate(2022, 1, 16) in Calendar(2022, default)"
     )
 
 
@@ -264,12 +263,18 @@ def test_calendar_can_only_get_one_set_of_dates(sqlite_session_factory):
     cal.calendar_creator()
     session.add(cal)
     session.commit()
+    ds1 = len(session.execute(select(ScopeDate)).all())
     repo = EventRepository(session)
     # TODO - we don't want to be creating new dates! The session creates
     # them with this syntax - we just want to pass the attributes....
     # we should be sending tuples instead of ScopeDate objects to
     # repo.add()
-    repo.add("Test Event", cal, [ScopeDate(2022, 2, 3)])
+    repo.add("Test Event", cal)
+    ev_ = session.execute(select(Event)).one()[0]
+    dmp.service.assoc_dates_with_event(ev_, cal, [(2022, 2, 3)], session)
+    ds2 = len(session.execute(select(ScopeDate)).all())
     session.commit()
+    assert (
+        ds1 == ds2
+    )  # we must not create new ScopeDate objects as a result of creating Events
     # this results in two of the date
-    pass

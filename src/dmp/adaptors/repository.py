@@ -1,16 +1,11 @@
 import abc
 import logging
-from typing import List, Tuple
+from typing import Tuple
 
 from dmp.domain.models import Calendar, Event, Inspector, ScopeDate
 from sqlalchemy import select
-from sqlalchemy.exc import NoResultFound
 
 logger = logging.getLogger(__name__)
-
-
-class MatchException(Exception):
-    pass
 
 
 class AbstractRepository(abc.ABC):
@@ -80,23 +75,8 @@ class EventRepository(AbstractRepository):
     def __init__(self, session):
         self.session = session
 
-    def add(self, name: str, cal: Calendar, dates: List[ScopeDate]):
-        # TODO: fix this to iterate through all dates
-        for d in dates:
-            year = d.year
-            month = d.month
-            day = d.day
-            try:
-                self.session.execute(
-                    select(ScopeDate).filter_by(
-                        calendar_id=cal.id, year=year, month=month, day=day
-                    )
-                ).one()
-            except NoResultFound:
-                raise MatchException(
-                    f"Cannot find ScopeDate({year}, {month}, {day}) in {cal}"
-                )
-        self.session.add(Event(name, dates))
+    def add(self, name: str, cal: Calendar):
+        self.session.add(Event(name))
         logger.info(f"Created Event({name}) to {cal}")
 
     def get(self, name: str, cal: Calendar):

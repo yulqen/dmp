@@ -1,7 +1,7 @@
 import calendar
 import datetime
 import itertools
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 
 class ModelException(Exception):
@@ -110,9 +110,8 @@ class RegulatoryCycle:
 
 
 class Event:
-    def __init__(self, name: str, dates: List[ScopeDate]):
+    def __init__(self, name: str):
         self.name = name
-        self.dates = dates
 
     def __repr__(self):
         return f"Event({self.name})"

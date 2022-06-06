@@ -26,7 +26,7 @@ def test_add_single_event_for_inspector(sqlite_session_factory):
     i.add_calendar(2020)
     session.add(i)
     session.commit()
-    start = ScopeDate(2020, 2, 14)  # in scope
+    start = (2020, 2, 14)  # in scope
     dmp.service.add_calendar_event(i, "Harold's Day Off", start, session)
     repo = EventRepository(session)
     events = repo.list()
@@ -39,14 +39,14 @@ def test_add_span_for_inspector(sqlite_session_factory):
     i.add_calendar(2020)
     session.add(i)
     session.commit()
-    start = ScopeDate(2020, 2, 14)  # in scope
-    end = ScopeDate(2020, 3, 2)  # in scope
+    start = (2020, 2, 14)  # in scope
+    end = (2020, 3, 2)  # in scope
     dmp.service.add_calendar_event(i, "Harold's Holidays", start, session, end)
     repo = EventRepository(session)
     events = repo.list()
     for e in events:
-        assert start in e[0].dates
-        assert end in e[0].dates
+        assert ScopeDate(*start) in e[0].dates
+        assert ScopeDate(*end) in e[0].dates
 
 
 @pytest.mark.skip("TODO")

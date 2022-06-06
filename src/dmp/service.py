@@ -1,37 +1,67 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
+
+from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
 
 from dmp.adaptors.repository import EventRepository, ScopeDateRepository
-from dmp.domain.models import ScopeDate
+from dmp.domain.models import Calendar, Event, ScopeDate
 
 
 class ServiceException(Exception):
     pass
 
 
-def _date_span(start: ScopeDate, end: ScopeDate, session) -> List[ScopeDate]:
+class MatchException(Exception):
+    pass
+
+
+def assoc_dates_with_event(
+    event: Event, calendar: Calendar, dates: List[Tuple[int]], session
+):
+    out_dates = []
+    for d in dates:
+        try:
+            out_dates.append(
+                session.execute(
+                    select(ScopeDate).filter_by(
+                        year=d[0], month=d[1], day=d[2], calendar_id=calendar.id
+                    )
+                ).one()
+            )
+        except NoResultFound:
+            raise MatchException(
+                f"Cannot find ScopeDate({d[0]}, {d[1]}, {d[2]}) in {calendar}"
+            )
+    event.dates = [d[0] for d in out_dates]
+    session.add(event)
+    session.commit()
+
+
+def _date_span(start: Tuple[int], end: Tuple[int], session) -> List[Tuple[int]]:
     """
-    Given start and end dates, returns a list of ScopeDate objects,
-    inclusive of those dates, that span the period. This list can be
-    passed to EventRepository.add().
+    Given start and end dates, returns a list of tuples representing
+    ScopeDate objects,inclusive of those dates, that span the period.
+    This list can be passed to EventRepository.add().
     """
     repo = ScopeDateRepository(session)
     dates = repo.list()
     start_id = [
         d.id
         for d in dates
-        if (d.year == start.year and d.month == start.month and d.day == start.day)
+        if (d.year == start[0] and d.month == start[1] and d.day == start[2])
     ][0]
     end_id = [
         d.id
         for d in dates
-        if (d.year == end.year and d.month == end.month and d.day == end.day)
+        if (d.year == end[0] and d.month == end[1] and d.day == end[2])
     ][0]
     idx = (start_id - 1, end_id - 1)
-    return dates[idx[0] : idx[1] + 1]
+    scs = dates[idx[0] : idx[1] + 1]
+    return [(d.year, d.month, d.day) for d in scs]
 
 
 def add_calendar_event(
-    owner, name: str, start: ScopeDate, session, end: Optional[ScopeDate] = None
+    owner, name: str, start: Tuple[int], session, end: Optional[Tuple[int]] = None
 ):
     """
     If owner has a Calendar object, add event name with start and end dates
@@ -45,7 +75,14 @@ def add_calendar_event(
     if end:
         dates = _date_span(start, end, session)
         for d in dates:
-            repo.add(name, owner.calendar, dates)
+            repo.add(name, owner.calendar)
+            # FIXME - need to fetch unique Event object here!
+            ev_ = session.execute(select(Event).where(Event.name == name)).fetchone()
+            assoc_dates_with_event(ev_[0], owner.calendar, [start, end], session)
         session.commit()
     else:
-        repo.add(name, owner.calendar, [start])
+        repo.add(name, owner.calendar)
+        # FIXME - need to fetch unique Event object here!
+        ev_ = session.execute(select(Event).where(Event.name == name)).fetchone()
+        assoc_dates_with_event(ev_[0], owner.calendar, [start], session)
+        session.commit()
