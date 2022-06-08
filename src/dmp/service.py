@@ -1,5 +1,3 @@
-from typing import List, Optional, Tuple
-
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
@@ -15,9 +13,11 @@ class MatchException(Exception):
     pass
 
 
-def assoc_dates_with_event(
-    event: Event, calendar: Calendar, dates: List[Tuple[int]], session
-):
+def assoc_dates_with_event(event, calendar, dates, session):
+    """
+    Given an Event and a calendar, ensure that the dates (tuples)
+    are assigned.
+    """
     out_dates = []
     for d in dates:
         try:
@@ -37,7 +37,7 @@ def assoc_dates_with_event(
     session.commit()
 
 
-def _date_span(start: Tuple[int], end: Tuple[int], session) -> List[Tuple[int]]:
+def _date_span(start, end, session):
     """
     Given start and end dates, returns a list of tuples representing
     ScopeDate objects,inclusive of those dates, that span the period.
@@ -60,9 +60,7 @@ def _date_span(start: Tuple[int], end: Tuple[int], session) -> List[Tuple[int]]:
     return [(d.year, d.month, d.day) for d in scs]
 
 
-def add_calendar_event(
-    owner, name: str, start: Tuple[int], session, end: Optional[Tuple[int]] = None
-):
+def add_calendar_event(owner, name, start, session, end):
     """
     If owner has a Calendar object, add event name with start and end dates
     provided.
