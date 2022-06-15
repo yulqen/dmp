@@ -60,7 +60,7 @@ def _date_span(start, end, session):
     return [(d.year, d.month, d.day) for d in scs]
 
 
-def add_calendar_event(owner, name, start, session, end):
+def add_calendar_event(owner, name, start, session, end=None):
     """
     If owner has a Calendar object, add event name with start and end dates
     provided.
