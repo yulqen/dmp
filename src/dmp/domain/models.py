@@ -1,7 +1,7 @@
 import calendar
 import datetime
 import itertools
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 
 class ModelException(Exception):

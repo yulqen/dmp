@@ -1,11 +1,10 @@
 import logging
 
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import dmp.service
 from dmp.adaptors import orm
-from dmp.adaptors.repository import InspectorRepository
 from dmp.domain.models import Inspector, RegulatoryCycle
 
 logger = logging.getLogger(__name__)
