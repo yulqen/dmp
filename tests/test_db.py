@@ -16,7 +16,7 @@ from dmp.domain.models import (
     RegulatoryCycle,
     ScopeDate,
 )
-from sqlalchemy import select
+from sqlalchemy import select, text
 
 # from https://www.fullstackpython.com/sqlalchemy-orm-session-examples.html
 
@@ -129,7 +129,7 @@ def test_list_scope_dates(sqlite_session_factory):
 def test_calendar_repository_list(sqlite_session_factory):
     session = sqlite_session_factory()
     session.execute(
-        "INSERT INTO calendar (id, year, name)" "VALUES(1, 2021, 'test cal')"  # noqa
+        text("INSERT INTO calendar (id, year, name)" "VALUES(1, 2021, 'test cal')")  # noqa
     )
     repo = CalendarRepository(session)
     res = repo.list()
@@ -140,15 +140,15 @@ def test_calendar_repository_list(sqlite_session_factory):
 def test_calendar_repository_get(sqlite_session_factory):
     session = sqlite_session_factory()
     session.execute(
-        "INSERT INTO calendar (id, year, name)" "VALUES(1, 2021, 'test cal')"  # noqa
+        text("INSERT INTO calendar (id, year, name)" "VALUES(1, 2021, 'test cal')")  # noqa
     )
     [[c_id]] = session.execute(
-        "SELECT id FROM calendar WHERE name=:name AND year=:year",
+        text("SELECT id FROM calendar WHERE name=:name AND year=:year"),
         dict(name="test cal", year=2021),
     )
     session.execute(
-        "INSERT INTO scope_date (id, year, month, day, isworking, calendar_id)"
-        "VALUES(:id, :year, :month, :day, :isworking, :calendar_id)",
+        text("INSERT INTO scope_date (id, year, month, day, isworking, calendar_id)"
+        "VALUES(:id, :year, :month, :day, :isworking, :calendar_id)"),
         dict(id=1, year=2021, month=1, day=1, isworking=1, calendar_id=c_id),
     )
     repo = CalendarRepository(session)
@@ -167,9 +167,9 @@ def test_calendar_repository_add(sqlite_session_factory):
     repo = CalendarRepository(session)
     repo.add(c)
     session.commit()
-    rows = session.execute("SELECT id, year, name FROM calendar")
+    rows = session.execute(text("SELECT id, year, name FROM calendar"))
     dates = session.execute(
-        "SELECT year, month, day FROM scope_date WHERE year=:year AND month=:month AND day=:day",
+        text("SELECT year, month, day FROM scope_date WHERE year=:year AND month=:month AND day=:day"),
         dict(year=2019, month=1, day=10),
     )
     assert list(rows) == [(1, 2019, "testes")]
@@ -183,14 +183,14 @@ def test_inspector_respository_add(sqlite_session_factory):
     repo = InspectorRepository(session)
     repo.add(i)
     session.commit()
-    rows = session.execute("SELECT id, name FROM inspector")
+    rows = session.execute(text("SELECT id, name FROM inspector"))
     assert list(rows) == [(1, "Ramon Chuffo")]
 
 
 def test_inspector_respository_get(sqlite_session_factory):
     session = sqlite_session_factory()
-    session.execute("INSERT INTO inspector (name) VALUES('Sandy Bolstun')")
-    session.execute("INSERT INTO inspector (name) VALUES('Tina Hunt')")
+    session.execute(text("INSERT INTO inspector (name) VALUES('Sandy Bolstun')"))
+    session.execute(text("INSERT INTO inspector (name) VALUES('Tina Hunt')"))
     repo = InspectorRepository(session)
     res = repo.get("Sandy Bolstun")
     res2 = repo.get("Tina Hunt")
@@ -200,8 +200,8 @@ def test_inspector_respository_get(sqlite_session_factory):
 
 def test_inspector_respository_list(sqlite_session_factory):
     session = sqlite_session_factory()
-    session.execute("INSERT INTO inspector (name) VALUES('Sandy Bolstun')")
-    session.execute("INSERT INTO inspector (name) VALUES('Hayden McLeslo')")
+    session.execute(text("INSERT INTO inspector (name) VALUES('Sandy Bolstun')"))
+    session.execute(text("INSERT INTO inspector (name) VALUES('Hayden McLeslo')"))
     repo = InspectorRepository(session)
     insprs = repo.list()
     assert Inspector("Hayden McLeslo") in insprs
