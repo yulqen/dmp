@@ -1,6 +1,7 @@
 from datetime import date
 
 import pytest
+
 from dmp.domain.models import Calendar, RegulatoryCycle, ScopeDate
 
 
