@@ -27,6 +27,9 @@ class ScopeDate:
     def __repr__(self):
         return f"ScopeDate({self.year}, {self.month}, {self.day})"
 
+    def __str__(self):
+        return f"{self.year}-{self.month}-{self.day}"
+
     def __eq__(self, other):
         if (
             self.day == other.day

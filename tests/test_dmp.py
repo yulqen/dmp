@@ -13,6 +13,11 @@ def cycle():
 def test_reg_cycle_repr(cycle):
     assert str(cycle) == "RegulatoryCycle(2022)"
 
+# first test by copilot!
+def test_scope_date():
+    d = ScopeDate(2022, 1, 3)
+    assert d.isworking
+    assert d.weekday() == 0
 
 def test_calendar_creator():
     c = Calendar(2022)
