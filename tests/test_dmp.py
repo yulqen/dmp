@@ -16,8 +16,13 @@ def test_reg_cycle_repr(cycle):
 # first test by copilot!
 def test_scope_date():
     d = ScopeDate(2022, 1, 3)
+
+    for attr in ("year", "month", "day"):
+        assert hasattr(d, attr)
+
     assert d.isworking
     assert d.weekday() == 0
+    assert d.weekday is not None
 
 def test_calendar_creator():
     c = Calendar(2022)
