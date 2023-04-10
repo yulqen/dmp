@@ -10,7 +10,7 @@ class ModelException(Exception):
 
 class ScopeDate:
     """
-    A ScopDate represents a date object. ScopeDate.isworking allows
+    A ScopeDate represents a date object. ScopeDate.isworking allows
     a client to designate working and non-working days.
     """
 
@@ -30,7 +30,7 @@ class ScopeDate:
     def __str__(self):
         return f"{self.year}-{self.month}-{self.day}"
 
-    def __eq__(self, other):
+    def __eq__(self, other: "ScopeDate"):
         if (
             self.day == other.day
             and self.month == other.month
