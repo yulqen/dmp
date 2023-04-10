@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
 from dmp.adaptors.repository import EventRepository, ScopeDateRepository
-from dmp.domain.models import Calendar, Event, ScopeDate
+from dmp.domain.models import Event, ScopeDate
 
 
 class ServiceException(Exception):

@@ -1,13 +1,17 @@
 from datetime import date
 
 import pytest
-
-from dmp.domain.models import Calendar, RegulatoryCycle, ScopeDate
+from dmp.domain.models import Calendar, ModelException, RegulatoryCycle, ScopeDate
 
 
 @pytest.fixture
 def cycle():
     return RegulatoryCycle(2022)
+
+
+def test_model_exception():
+    with pytest.raises(ModelException):
+        raise ModelException("test")
 
 
 def test_reg_cycle_repr(cycle):

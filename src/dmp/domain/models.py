@@ -14,7 +14,7 @@ class ScopeDate:
     a client to designate working and non-working days.
     """
 
-    def __init__(self, year, month, day):
+    def __init__(self, year: int, month: int, day: int):
         self.year = year
         self.month = month
         self.day = day
@@ -27,7 +27,7 @@ class ScopeDate:
     def __repr__(self):
         return f"ScopeDate({self.year}, {self.month}, {self.day})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: "ScopeDate"):
         if (
             self.day == other.day
             and self.month == other.month
