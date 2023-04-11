@@ -45,6 +45,9 @@ class ScopeDate:
 
 
 class Calendar:
+    """
+    A calendar has scope dates.
+    """
     def __init__(self, year: int, name: Optional[str] = None):
         self.year = year
         if name:
